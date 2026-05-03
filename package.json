@@ -1,0 +1,13 @@
+{
+  "name": "idp-presentation",
+  "version": "1.0.0",
+  "description": "Individual Development Plan - Interactive Web Presentation",
+  "scripts": {
+    "dev": "bun run --hot dev-server.ts",
+    "build": "bun run build.ts",
+    "test": "bun test",
+    "test:links": "bun test tests/links.test.ts",
+    "test:html": "bun test tests/html.test.ts",
+    "test:content": "bun test tests/content.test.ts"
+  }
+}

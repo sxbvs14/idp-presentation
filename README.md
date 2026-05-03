@@ -40,3 +40,4 @@ bun run test     # run all tests
 ## Deploy
 
 Pushes to `main` automatically build, test, and deploy to GitHub Pages.
+# trigger

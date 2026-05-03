@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -72,6 +72,7 @@ jobs:
           git checkout --orphan gh-pages-temp
           git rm -rf .
           cp -r dist/* .
+          rm -rf dist
           git add -A
           git commit -m "deploy: $(date -u +%Y-%m-%d-%H:%M:%S)"
           git branch -M gh-pages

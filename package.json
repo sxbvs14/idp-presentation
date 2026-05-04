@@ -9,5 +9,13 @@
     "test:links": "bun test tests/links.test.ts",
     "test:html": "bun test tests/html.test.ts",
     "test:content": "bun test tests/content.test.ts"
+  },
+  "dependencies": {
+    "@react-three/fiber": "^9.6.1",
+    "@react-three/postprocessing": "^3.0.4",
+    "postprocessing": "^6.39.1",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "three": "^0.184.0"
   }
 }

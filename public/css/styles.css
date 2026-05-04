@@ -136,7 +136,8 @@ body {
   z-index: 0;
 }
 
-#hero-canvas {
+#hero-canvas,
+#hero-r3f-root {
   position: absolute;
   inset: 0;
   width: 100%;

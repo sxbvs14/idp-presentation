@@ -183,11 +183,11 @@
         <p class="section-desc">Key contributions and milestones</p>
       </div>
       <div class="achievements-list">
-        <div class="achievement-card placeholder-card"><span>[Achievement 1]</span></div>
-        <div class="achievement-card placeholder-card"><span>[Achievement 2]</span></div>
-        <div class="achievement-card placeholder-card"><span>[Achievement 3]</span></div>
-        <div class="achievement-card placeholder-card"><span>[Achievement 4]</span></div>
-        <div class="achievement-card placeholder-card"><span>[Achievement 5]</span></div>
+        <div class="achievement-card placeholder-card" data-image="https://picsum.photos/id/180/800/500" data-title="Achievement 1"><span>[Achievement 1]</span></div>
+        <div class="achievement-card placeholder-card" data-image="https://picsum.photos/id/188/800/500" data-title="Achievement 2"><span>[Achievement 2]</span></div>
+        <div class="achievement-card placeholder-card" data-image="https://picsum.photos/id/192/800/500" data-title="Achievement 3"><span>[Achievement 3]</span></div>
+        <div class="achievement-card placeholder-card" data-image="https://picsum.photos/id/196/800/500" data-title="Achievement 4"><span>[Achievement 4]</span></div>
+        <div class="achievement-card placeholder-card" data-image="https://picsum.photos/id/200/800/500" data-title="Achievement 5"><span>[Achievement 5]</span></div>
       </div>
     </div>
   </section>
@@ -201,9 +201,9 @@
         <p class="section-desc">Core competencies demonstrated</p>
       </div>
       <div class="behaviors-grid">
-        <div class="behavior-card placeholder-card"><span>[Behavior 1]</span></div>
-        <div class="behavior-card placeholder-card"><span>[Behavior 2]</span></div>
-        <div class="behavior-card placeholder-card"><span>[Behavior 3]</span></div>
+        <div class="behavior-card placeholder-card" data-image="https://picsum.photos/id/237/800/500" data-title="Behavior 1"><span>[Behavior 1]</span></div>
+        <div class="behavior-card placeholder-card" data-image="https://picsum.photos/id/250/800/500" data-title="Behavior 2"><span>[Behavior 2]</span></div>
+        <div class="behavior-card placeholder-card" data-image="https://picsum.photos/id/260/800/500" data-title="Behavior 3"><span>[Behavior 3]</span></div>
       </div>
     </div>
   </section>
@@ -309,5 +309,18 @@
   </footer>
 
   <script type="module" src="js/main.js"></script>
+
+  <!-- Image Modal -->
+  <div id="image-modal" class="modal-overlay">
+    <div class="modal-backdrop"></div>
+    <div class="modal-box">
+      <button class="modal-close" aria-label="Close">&times;</button>
+      <img id="modal-img" alt="" loading="lazy">
+      <div class="modal-caption">
+        <h3 id="modal-title"></h3>
+        <p>Click outside or press ESC to close</p>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

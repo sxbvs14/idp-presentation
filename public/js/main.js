@@ -394,6 +394,42 @@ function initMagneticCards() {
   });
 }
 
+
+/* -------------------- Image Modal -------------------- */
+function initModal() {
+  const overlay = document.getElementById('image-modal');
+  const img = document.getElementById('modal-img');
+  const title = document.getElementById('modal-title');
+  const closeBtn = overlay?.querySelector('.modal-close');
+  if (!overlay || !img || !title) return;
+
+  const cards = document.querySelectorAll('.achievement-card[data-image], .behavior-card[data-image]');
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      const src = card.dataset.image;
+      const label = card.dataset.title || card.textContent.trim();
+      img.src = src;
+      img.alt = label;
+      title.textContent = label;
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  function close() {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+    setTimeout(() => { img.src = ''; }, 400);
+  }
+
+  closeBtn?.addEventListener('click', close);
+  overlay.querySelector('.modal-backdrop').addEventListener('click', close);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay.classList.contains('active')) close();
+  });
+}
+
 /* -------------------- Initialize -------------------- */
 document.addEventListener('DOMContentLoaded', () => {
   initCanvas();
@@ -406,4 +442,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initCursorGlow();
   initTextScramble();
   initMagneticCards();
+  initModal();
 });

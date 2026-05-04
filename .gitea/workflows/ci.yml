@@ -1,0 +1,74 @@
+name: IDP Presentation CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build
+        run: bun run build
+
+      - name: Test Links
+        run: bun run test:links
+
+      - name: Test HTML
+        run: bun run test:html
+
+      - name: Test Content
+        run: bun run test:content
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: ./dist
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build
+        run: bun run build
+
+      - name: Deploy to gh-pages
+        run: |
+          git config user.name "gitea-actions[bot]"
+          git config user.email "gitea-actions@local"
+          git checkout --orphan gh-pages-temp
+          git rm -rf .
+          cp -r dist/* .
+          rm -rf dist
+          git add -A
+          git commit -m "deploy: $(date -u +%Y-%m-%d-%H:%M:%S)"
+          git branch -M gh-pages
+          git push origin gh-pages --force

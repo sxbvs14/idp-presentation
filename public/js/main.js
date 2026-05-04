@@ -303,155 +303,95 @@ function initNavSpy() {
   sections.forEach(s => observer.observe(s));
 }
 
-/* -------------------- PretextJS Text Flow Demo (WOW) -------------------- */
-async function initPretextFlow() {
-  // This is the main WOW effect: a paragraph that uses Pretext's
-  // layoutNextLineRange to flow text into variable-width columns
-  const section = document.getElementById('technologies');
-  if (!section) return;
+/* -------------------- Design Upgrades -------------------- */
 
-  // Insert a subtle Pretext-powered text block below the tech cards
-  const container = section.querySelector('.container');
-  if (!container) return;
-
-  const flowDiv = document.createElement('div');
-  flowDiv.className = 'pretext-flow';
-  flowDiv.innerHTML = `
-    <div class="pretext-flow-label">
-      <span class="pulse-dot"></span>
-      Powered by PretextJS
-    </div>
-    <canvas id="pretext-canvas" style="width:100%;height:120px;display:block;"></canvas>
-  `;
-
-  const style = document.createElement('style');
-  style.textContent = `
-    .pretext-flow {
-      margin-top: 4rem;
-      padding: 2rem;
-      background: rgba(124, 58, 237, 0.04);
-      border: 1px solid rgba(124, 58, 237, 0.15);
-      border-radius: 1.25rem;
-      text-align: center;
-    }
-    .pretext-flow-label {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      color: var(--primary-light);
-      margin-bottom: 1rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .pulse-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--primary);
-      animation: pulse-dot 2s infinite;
-    }
-  `;
-  document.head.appendChild(style);
-  container.appendChild(flowDiv);
-
-  const canvas = document.getElementById('pretext-canvas');
-  if (!canvas) return;
+/* Grain texture overlay */
+function initGrain() {
+  const canvas = document.createElement('canvas');
+  canvas.id = 'grain-canvas';
+  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;opacity:0.04;';
+  document.body.appendChild(canvas);
   const ctx = canvas.getContext('2d');
-
-  const CORPUS = 'Pretext measures and positions multiline text entirely through arithmetic — no getBoundingClientRect, no reflow, no thrashing. Fast on first call. Instant on every call after.';
-  const FONT_SIZE = 16;
-  const LINE_HEIGHT = 26;
-  const FONT = `${FONT_SIZE}px ${FONT_SANS}`;
-
-  let prepared;
-  try {
-    prepared = prepareWithSegments(CORPUS, FONT);
-  } catch (e) {
-    return;
+  let w, h;
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
   }
-
-  function render() {
-    const cssW = canvas.offsetWidth;
-    const cssH = canvas.offsetHeight;
-    canvas.width = cssW * window.devicePixelRatio;
-    canvas.height = cssH * window.devicePixelRatio;
-    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-    ctx.clearRect(0, 0, cssW, cssH);
-
-    // Variable width layout: wider in center, narrower at edges
-    const centerY = cssH / 2;
-    let cursor = { segmentIndex: 0, graphemeIndex: 0 };
-    let y = 10;
-    const lines = [];
-
-    while (y < cssH - LINE_HEIGHT) {
-      const progress = Math.abs(y - centerY) / centerY;
-      const lineWidth = cssW * (0.9 - progress * 0.4); // 90% down to 50%
-      const leftEdge = (cssW - lineWidth) / 2;
-
-      const { layoutNextLineRange } = window._pretextHelpers || {};
-      // Fallback to simple fixed-width since esm.sh may not expose all internals
-      const maxChars = Math.floor(lineWidth / (FONT_SIZE * 0.52));
-      if (cursor.segmentIndex >= CORPUS.length) break;
-
-      const start = cursor.segmentIndex;
-      const end = Math.min(start + maxChars, CORPUS.length);
-      const lineText = CORPUS.slice(start, end);
-
-      ctx.font = FONT;
-      ctx.fillStyle = 'rgba(165, 180, 252, 0.7)';
-      ctx.textAlign = 'left';
-      ctx.fillText(lineText, leftEdge, y + FONT_SIZE);
-
-      cursor.segmentIndex = end;
-      y += LINE_HEIGHT;
+  function noise() {
+    const idata = ctx.createImageData(w, h);
+    const buffer = idata.data;
+    for (let i = 0; i < buffer.length; i += 4) {
+      const v = Math.random() * 255;
+      buffer[i] = v;
+      buffer[i+1] = v;
+      buffer[i+2] = v;
+      buffer[i+3] = 255;
     }
-
-    // Reset cursor for next frame (loop the text)
-    if (cursor.segmentIndex >= CORPUS.length - 5) {
-      cursor.segmentIndex = 0;
-    }
+    ctx.putImageData(idata, 0, 0);
+    requestAnimationFrame(noise);
   }
+  resize();
+  noise();
+  window.addEventListener('resize', resize);
+}
 
-  // Simple animated reflow demo
-  let offset = 0;
+/* Custom cursor glow */
+function initCursorGlow() {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  const glow = document.createElement('div');
+  glow.className = 'cursor-glow';
+  document.body.appendChild(glow);
+  let mx = -100, my = -100, cx = -100, cy = -100;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
   function animate() {
-    const cssW = canvas.offsetWidth;
-    const cssH = canvas.offsetHeight;
-    canvas.width = cssW * window.devicePixelRatio;
-    canvas.height = cssH * window.devicePixelRatio;
-    ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
-    ctx.clearRect(0, 0, cssW, cssH);
-
-    const centerY = cssH / 2;
-    let y = 12;
-    offset = (offset + 0.3) % (CORPUS.length);
-
-    const textToShow = CORPUS.slice(Math.floor(offset)) + ' ' + CORPUS.slice(0, Math.floor(offset));
-
-    while (y < cssH - LINE_HEIGHT) {
-      const progress = Math.abs(y - centerY) / (centerY || 1);
-      const lineWidth = cssW * (0.88 - progress * 0.35);
-      const leftEdge = (cssW - lineWidth) / 2;
-      const maxChars = Math.floor(lineWidth / (FONT_SIZE * 0.5));
-
-      const lineIdx = Math.floor((y - 12) / LINE_HEIGHT);
-      const start = lineIdx * maxChars;
-      if (start >= textToShow.length) break;
-      const lineText = textToShow.slice(start, start + maxChars);
-
-      ctx.font = FONT;
-      ctx.fillStyle = `rgba(165, 180, 252, ${0.5 + (1 - progress) * 0.5})`;
-      ctx.fillText(lineText, leftEdge, y + FONT_SIZE);
-      y += LINE_HEIGHT;
-    }
-
+    cx += (mx - cx) * 0.12;
+    cy += (my - cy) * 0.12;
+    glow.style.transform = `translate(${cx - 150}px, ${cy - 150}px)`;
     requestAnimationFrame(animate);
   }
-
   animate();
+}
+
+/* Text scramble on section titles */
+function initTextScramble() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  const titles = document.querySelectorAll('.section-title');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !entry.target.dataset.scrambled) {
+        entry.target.dataset.scrambled = '1';
+        const original = entry.target.textContent;
+        let iter = 0;
+        const interval = setInterval(() => {
+          entry.target.textContent = original.split('').map((char, i) => {
+            if (char === ' ') return ' ';
+            if (i < iter) return original[i];
+            return chars[Math.floor(Math.random() * chars.length)];
+          }).join('');
+          if (iter >= original.length) clearInterval(interval);
+          iter += 1/2;
+        }, 30);
+      }
+    });
+  }, { threshold: 0.5 });
+  titles.forEach(t => observer.observe(t));
+}
+
+/* Magnetic hover on tech cards */
+function initMagneticCards() {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  const cards = document.querySelectorAll('.tech-card');
+  cards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      card.style.transform = `translate(${x * 0.15}px, ${y * 0.15}px) translateY(-8px) scale(1.03)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
 }
 
 /* -------------------- Initialize -------------------- */
@@ -462,5 +402,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initPretextCards();
   initScrollReveal();
   initNavSpy();
-  initPretextFlow();
+  initGrain();
+  initCursorGlow();
+  initTextScramble();
+  initMagneticCards();
 });

@@ -9,6 +9,18 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "react": "https://esm.sh/react@18.3.1?dev",
+      "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?dev",
+      "three": "https://esm.sh/three@0.160.1?dev",
+      "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.15.14?dev",
+      "@react-three/postprocessing": "https://esm.sh/@react-three/postprocessing@2.15.12?dev",
+      "postprocessing": "https://esm.sh/postprocessing@6.34.1?dev"
+    }
+  }
+  </script>
 </head>
 <body>
   <!-- Navigation -->
@@ -308,7 +320,7 @@
     </div>
   </footer>
 
-  <script type="module" src="js/dither-bundle.js"></script>
+  <script type="module" src="js/dither-esm.js"></script>
   <script type="module" src="js/main.js"></script>
 
   <!-- Image Modal -->
